@@ -8,8 +8,22 @@
     tools:context="com.bkprojects.soundsleep.MainActivity">
 
     <TextView
+        android:id="@+id/end_time_label"
+        android:layout_width="126dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="32dp"
+        android:fontFamily="sans-serif-light"
+        android:text="@string/end_time"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/start_time_label" />
+
+    <TextView
         android:id="@+id/start_time_label"
-        android:layout_width="0dp"
+        android:layout_width="126dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="50dp"
@@ -35,6 +49,20 @@
         app:layout_constraintStart_toEndOf="@+id/start_time_label"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <TextView
+        android:id="@+id/end_time_value"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="32dp"
+        android:fontFamily="sans-serif-medium"
+        android:text="@string/end_time_default"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@+id/end_time_label"
+        app:layout_constraintTop_toBottomOf="@+id/start_time_value" />
+
     <Button
         android:id="@+id/select_start_time"
         android:layout_width="wrap_content"
@@ -54,4 +82,25 @@
         app:layout_constraintStart_toEndOf="@+id/start_time_value"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="TextContrastCheck" />
+
+    <Button
+        android:id="@+id/select_end_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="8dp"
+        android:backgroundTint="@color/material_dynamic_primary70"
+        android:fontFamily="sans-serif-medium"
+        android:onClick="setEndTime"
+        android:text="@string/select_time"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:cornerRadius="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/end_time_value"
+        app:layout_constraintTop_toBottomOf="@+id/select_start_time"
+        tools:ignore="TextContrastCheck" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

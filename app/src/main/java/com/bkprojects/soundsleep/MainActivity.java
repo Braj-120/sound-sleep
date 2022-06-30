@@ -25,8 +25,8 @@ public class MainActivity extends AppCompatActivity {
      * @param view View
      */
     public void setStartTime(View view) {
-        DialogFragment newFragment = new TimePickerFragment();
-        newFragment.show(getSupportFragmentManager(), TIME_PICKER_DIALOG_TAG);
+        DialogFragment startTimeFragment = new TimePickerFragment();
+        startTimeFragment.show(getSupportFragmentManager(), TIME_PICKER_DIALOG_TAG);
     }
 
     /**
@@ -64,5 +64,10 @@ public class MainActivity extends AppCompatActivity {
     public void processTimePickerResult(int hour, int minute) {
         Log.d(LOG_TAG, "Selected start time as " + hour + ":" + minute);
         startTimeValue.setText(getTimeIn12Hours(hour, minute));
+    }
+
+    public void setEndTime(View view) {
+        DialogFragment endTimeFragment = new TimePickerFragment();
+        endTimeFragment.show(getSupportFragmentManager(), TIME_PICKER_DIALOG_TAG);
     }
 }

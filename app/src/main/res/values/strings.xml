@@ -1,8 +1,9 @@
 <resources>
     <string name="app_name">Sound Sleep</string>
     <string name="start_time">Start Time</string>
-    <string name="start_time_default">11:00 PM</string>
+    <string name="start_time_default">--:-- PM</string>
+    <string name="end_time_default">--:-- AM</string>
     <string name="select_time">Select Time</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="end_time">End Time</string>
 </resources>
