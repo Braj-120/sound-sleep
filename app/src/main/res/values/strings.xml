@@ -6,4 +6,7 @@
     <string name="select_time">Select Time</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="end_time">End Time</string>
+    <string name="select_mode">Select Mode</string>
+    <string name="silent_mode">Silent</string>
+    <string name="vibrate_mode">Vibrate</string>
 </resources>
