@@ -4,11 +4,25 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/purple_200"
+    android:background="@color/material_dynamic_neutral30"
     tools:context="com.bkprojects.soundsleep.MainActivity">
 
     <TextView
         android:id="@+id/select_mode_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="32dp"
+        android:fontFamily="sans-serif-light"
+        android:text="@string/select_mode"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/end_time_label" />
+
+    <TextView
+        android:id="@+id/select_mode_label3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -49,85 +63,113 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/start_time_value"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="50dp"
-        android:fontFamily="sans-serif-medium"
-        android:text="@string/start_time_default"
-        android:textColor="@color/white"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toEndOf="@+id/start_time_label"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/end_time_value"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="26dp"
-        android:layout_marginTop="32dp"
-        android:fontFamily="sans-serif-medium"
-        android:text="@string/end_time_default"
-        android:textColor="@color/white"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toEndOf="@+id/end_time_label"
-        app:layout_constraintTop_toBottomOf="@+id/start_time_value" />
-
     <Button
-        android:id="@+id/select_start_time"
+        android:id="@+id/select_start_time_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
+        android:layout_marginStart="64dp"
         android:layout_marginTop="42dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginEnd="32dp"
         android:backgroundTint="@color/material_dynamic_primary70"
         android:fontFamily="sans-serif-medium"
         android:onClick="setTime"
-        android:text="@string/select_time"
+        android:text="@string/start_time_default"
         android:textColor="@color/white"
         android:textSize="16sp"
         android:textStyle="bold"
         app:cornerRadius="0dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/start_time_value"
+        app:layout_constraintStart_toEndOf="@+id/start_time_label"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="TextContrastCheck,DuplicateSpeakableTextCheck" />
 
     <Button
-        android:id="@+id/select_end_time"
+        android:id="@+id/select_end_time_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginStart="68dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="32dp"
         android:backgroundTint="@color/material_dynamic_primary70"
         android:fontFamily="sans-serif-medium"
         android:onClick="setTime"
-        android:text="@string/select_time"
+        android:text="@string/end_time_default"
         android:textColor="@color/white"
         android:textSize="16sp"
         android:textStyle="bold"
         app:cornerRadius="0dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/end_time_value"
-        app:layout_constraintTop_toBottomOf="@+id/select_start_time"
+        app:layout_constraintHorizontal_bias="0.533"
+        app:layout_constraintStart_toEndOf="@+id/end_time_label"
+        app:layout_constraintTop_toBottomOf="@+id/select_start_time_btn"
         tools:ignore="TextContrastCheck" />
 
     <Spinner
         android:id="@+id/mode_select_spinner"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="112dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginStart="64dp"
+        android:layout_marginTop="16dp"
+        android:contentDescription="@string/select_mode"
         android:dropDownWidth="match_parent"
+        android:minHeight="32dp"
         android:spinnerMode="dropdown"
         android:textAlignment="center"
         app:layout_constraintBaseline_toBaselineOf="@+id/select_mode_label"
         app:layout_constraintStart_toEndOf="@+id/select_mode_label"
-        app:layout_constraintTop_toBottomOf="@+id/select_end_time" />
+        app:layout_constraintTop_toBottomOf="@+id/select_end_time_btn" />
+
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/notification_switch"
+        android:layout_width="226dp"
+        android:layout_height="47dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="32dp"
+        android:fontFamily="sans-serif-light"
+        android:text="@string/notifications"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/select_mode_label" />
+
+    <Button
+        android:id="@+id/clear_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="46dp"
+        android:layout_marginStart="48dp"
+        android:layout_marginBottom="259dp"
+        android:backgroundTint="@color/material_dynamic_neutral70"
+        android:clickable="true"
+        android:focusable="true"
+        android:fontFamily="sans-serif-light"
+        android:gravity="center"
+        android:text="@string/clear"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:cornerRadius="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/save_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="46dp"
+        android:layout_marginStart="98dp"
+        android:layout_marginEnd="48dp"
+        android:layout_marginBottom="259dp"
+        android:backgroundTint="@color/material_dynamic_primary70"
+        android:focusable="true"
+        android:fontFamily="sans-serif-light"
+        android:gravity="center"
+        android:text="@string/save"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:cornerRadius="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/clear_btn" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,15 +19,17 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     private static final String LOG_TAG =
             MainActivity.class.getSimpleName();
-    private TextView startTimeValue;
-    private TextView endTimeValue;
+    private Button startTimeValue;
+    private Button endTimeValue;
+    Entities entities;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        startTimeValue = findViewById(R.id.start_time_value);
-        endTimeValue = findViewById(R.id.end_time_value);
+        startTimeValue = findViewById(R.id.select_start_time_btn);
+        endTimeValue = findViewById(R.id.select_end_time_btn);
         createSpinner();
+        entities = new Entities();
     }
 
     /**
@@ -39,10 +42,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         Spinner modeSpinner = findViewById(R.id.mode_select_spinner);
         modeSpinner.setOnItemSelectedListener(this);
         ArrayAdapter<String> modeArrayAdapter = new ArrayAdapter<>(this, androidx.appcompat.R.layout.support_simple_spinner_dropdown_item, modeSpinnerList);
-
         modeSpinner.setAdapter(modeArrayAdapter);
         modeSpinner.setSelection(0);
-
     }
 
     /**
@@ -50,17 +51,17 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
      * @param view View
      */
     public void setTime(View view) {
-        TextView textViewToSetTemp;
-        Log.i(LOG_TAG, view.getId() + " "+ R.id.select_start_time);
-        if (view.getId() == R.id.select_start_time) {
+        Button textViewToSetTemp;
+        Log.i(LOG_TAG, view.getId() + " "+ R.id.select_start_time_btn);
+        if (view.getId() == R.id.select_start_time_btn) {
             textViewToSetTemp = startTimeValue;
-        } else if(view.getId() == R.id.select_end_time) {
+        } else if(view.getId() == R.id.select_end_time_btn) {
             textViewToSetTemp = endTimeValue;
         } else {
             throw new IllegalStateException("Unexpected value: " + view.getId());
         }
 
-        final TextView textViewToSet = textViewToSetTemp;
+        final Button textViewToSet = textViewToSetTemp;
         TimePickerUtil tmUtil = new TimePickerUtil(this);
         tmUtil.setTimeListener((view1, time) -> processTimePickerResult(textViewToSet, time));
         tmUtil.show();

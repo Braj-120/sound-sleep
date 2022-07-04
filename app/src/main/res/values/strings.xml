@@ -9,4 +9,7 @@
     <string name="select_mode">Select Mode</string>
     <string name="silent_mode">Silent</string>
     <string name="vibrate_mode">Vibrate</string>
+    <string name="notifications">Notifications</string>
+    <string name="clear">Clear</string>
+    <string name="save">Save</string>
 </resources>
