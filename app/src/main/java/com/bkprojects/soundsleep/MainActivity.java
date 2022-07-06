@@ -28,8 +28,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private Button endTimeValue;
     private SwitchMaterial notificationSwitch;
     private Spinner modeSpinner;
-    Entities entities;
-    EntitiesDAO entitiesDAO;
+    private Entities entities;
+    private EntitiesDAO entitiesDAO;
+    private AlarmUtil alarmUtil;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +40,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         endTimeValue = findViewById(R.id.select_end_time_btn);
         notificationSwitch = findViewById(R.id.notification_switch);
         modeSpinner = createSpinner();
+        alarmUtil = new AlarmUtil(this);
         try {
             entitiesDAO = new EntitiesDAO(this);
         } catch (GeneralSecurityException | IOException e) {
@@ -48,6 +50,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
         //Loading all stored data at the end of loading all object and UI items.
         loadSharedPrefs(this);
+
     }
 
     /**
@@ -171,7 +174,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             //Start the timer
 
             Toast.makeText(this, "Saved and set timer successfully.", Toast.LENGTH_SHORT).show();
-
+            alarmUtil.schedule(startTime);
+            alarmUtil.schedule(endTime);
         } catch (Exception ex) {
             Log.e(LOG_TAG, "Error encountered during saving the data " + ex.getMessage());
             Toast.makeText(this, "Some error occurred while persisting the settings, Please contact App developers. ", Toast.LENGTH_SHORT).show();
