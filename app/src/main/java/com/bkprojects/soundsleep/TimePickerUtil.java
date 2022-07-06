@@ -10,7 +10,6 @@ import java.util.Calendar;
  * It has an interface to provide a callback
  */
 public class TimePickerUtil {
-    private static final String TIME_PICKER_DIALOG_TAG = "Select Time";
     TimePickerDialog mTimePickerDialog;
 
     /**
@@ -35,7 +34,6 @@ public class TimePickerUtil {
                     String time = getTimeIn12Hours(hr, min);
                     mOnTimeSet.onTime(timePicker, time);
                 }, hour, minutes, false);
-        mTimePickerDialog.setTitle(TIME_PICKER_DIALOG_TAG);
         mTimePickerDialog.show();
     }
     public void show() {

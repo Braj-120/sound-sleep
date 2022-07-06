@@ -12,29 +12,28 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="64dp"
         android:fontFamily="sans-serif-light"
         android:text="@string/select_mode"
         android:textColor="@color/white"
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/end_time_label" />
-
+        app:layout_constraintTop_toBottomOf="@+id/start_time_label" />
 
     <TextView
         android:id="@+id/end_time_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginStart="392dp"
+        android:layout_marginTop="48dp"
         android:fontFamily="sans-serif-light"
         android:text="@string/end_time"
         android:textColor="@color/white"
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/start_time_label" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/start_time_label"
@@ -52,11 +51,10 @@
 
     <Button
         android:id="@+id/select_start_time_btn"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="70dp"
-        android:layout_marginTop="42dp"
-        android:layout_marginEnd="64dp"
+        android:layout_marginStart="64dp"
+        android:layout_marginTop="44dp"
         android:backgroundTint="@color/material_dynamic_primary70"
         android:fontFamily="sans-serif-medium"
         android:onClick="setTime"
@@ -65,18 +63,16 @@
         android:textSize="16sp"
         android:textStyle="bold"
         app:cornerRadius="0dp"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/start_time_label"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="TextContrastCheck,DuplicateSpeakableTextCheck" />
 
     <Button
         android:id="@+id/select_end_time_btn"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="80dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="64dp"
+        android:layout_marginStart="64dp"
+        android:layout_marginTop="44dp"
         android:backgroundTint="@color/material_dynamic_primary70"
         android:fontFamily="sans-serif-medium"
         android:onClick="setTime"
@@ -85,10 +81,8 @@
         android:textSize="16sp"
         android:textStyle="bold"
         app:cornerRadius="0dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.533"
         app:layout_constraintStart_toEndOf="@+id/end_time_label"
-        app:layout_constraintTop_toBottomOf="@+id/select_start_time_btn"
+        app:layout_constraintTop_toTopOf="parent"
         tools:ignore="TextContrastCheck" />
 
     <Spinner
@@ -96,36 +90,38 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="44dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="34dp"
         android:contentDescription="@string/select_mode"
         android:dropDownWidth="match_parent"
-        android:minHeight="32dp"
+        android:minHeight="48dp"
         android:spinnerMode="dropdown"
         android:textAlignment="center"
         app:layout_constraintBaseline_toBaselineOf="@+id/select_mode_label"
         app:layout_constraintStart_toEndOf="@+id/select_mode_label"
-        app:layout_constraintTop_toBottomOf="@+id/select_end_time_btn" />
+        app:layout_constraintTop_toBottomOf="@+id/select_start_time_btn"
+        tools:ignore="DuplicateSpeakableTextCheck" />
 
     <com.google.android.material.switchmaterial.SwitchMaterial
         android:id="@+id/notification_switch"
-        android:layout_width="210dp"
-        android:layout_height="48dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="32dp"
+        android:layout_width="201dp"
+        android:layout_height="41dp"
+        android:layout_marginStart="392dp"
+        android:layout_marginTop="44dp"
         android:fontFamily="sans-serif-light"
         android:text="@string/notifications"
         android:textColor="@color/white"
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/select_mode_label" />
+        app:layout_constraintTop_toBottomOf="@+id/select_end_time_btn" />
 
     <Button
         android:id="@+id/clear_btn"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="48dp"
-        android:layout_marginStart="48dp"
-        android:layout_marginBottom="259dp"
+        android:layout_marginStart="150dp"
+        android:layout_marginTop="210dp"
+        android:layout_marginEnd="32dp"
         android:backgroundTint="@color/material_dynamic_neutral70"
         android:clickable="true"
         android:focusable="true"
@@ -136,16 +132,19 @@
         android:textColor="@color/white"
         android:textSize="18sp"
         android:textStyle="bold"
+        android:visibility="visible"
         app:cornerRadius="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintEnd_toStartOf="@+id/save_btn"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/save_btn"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="48dp"
-        android:layout_marginEnd="64dp"
-        android:layout_marginBottom="259dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="210dp"
+        android:layout_marginEnd="150dp"
         android:backgroundTint="@color/material_dynamic_primary70"
         android:focusable="true"
         android:fontFamily="sans-serif-light"
@@ -155,8 +154,11 @@
         android:textColor="@color/white"
         android:textSize="18sp"
         android:textStyle="bold"
+        android:visibility="visible"
         app:cornerRadius="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/clear_btn"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

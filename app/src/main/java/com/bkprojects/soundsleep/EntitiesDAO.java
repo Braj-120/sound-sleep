@@ -67,4 +67,15 @@ public class EntitiesDAO {
         entities.setNotifications(sharedPreferences.getBoolean(NOTIFICATION_KEY, false));
         return entities;
     }
+
+    /**
+     * Remove all the shared Preferences
+     */
+    public void removeAllPreferences() {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove(START_TIME_KEY);
+        editor.remove(END_TIME_KEY);
+        editor.remove(MODE_KEY);
+        editor.remove(NOTIFICATION_KEY);
+    }
 }
