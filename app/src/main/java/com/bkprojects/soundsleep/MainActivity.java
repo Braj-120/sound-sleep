@@ -74,7 +74,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
      */
     public void setTime(View view) {
         Button textViewToSetTemp;
-        Log.i(LOG_TAG, view.getId() + " " + R.id.select_start_time_btn);
         if (view.getId() == R.id.select_start_time_btn) {
             textViewToSetTemp = startTimeValue;
         } else if (view.getId() == R.id.select_end_time_btn) {
@@ -123,8 +122,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             endTimeValue.setText(entities.getEndTime());
             notificationSwitch.setChecked(entities.isNotifications());
             setModeSpinnerToVal(modeSpinner, entities.getMode());
-            //ToDo Remove this toast
-            Toast.makeText(this, "Loaded UI", Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             Log.e(LOG_TAG, "Some error occurred while loading the stored data or setting UI with values. "+ e.getMessage());
             Toast.makeText(this, "Some error occurred while loading the UI Please contact App developers. ", Toast.LENGTH_SHORT).show();
@@ -160,7 +157,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             Spinner modeSpinner = findViewById(R.id.mode_select_spinner);
             mode = modeSpinner.getSelectedItem().toString();
             //TODO change this log statement
-            Log.i(LOG_TAG, startTime + " " + endTime + " " + notifications + " " + mode);
+            Log.d(LOG_TAG, "Setting startTime: " +
+                    startTime + " endTime: " + endTime + " notification: " + notifications
+                    + " mode: " + mode);
 
             //Set the Entities object
             entities.setStartTime(startTime);
@@ -173,9 +172,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
             //Start the timer
 
-            Toast.makeText(this, "Saved and set timer successfully.", Toast.LENGTH_SHORT).show();
-            alarmUtil.schedule(startTime);
-            alarmUtil.schedule(endTime);
+//            Toast.makeText(this, "Saved and set timer successfully.", Toast.LENGTH_SHORT).show();
+            alarmUtil.alarmScheduleWrapper(entities);
         } catch (Exception ex) {
             Log.e(LOG_TAG, "Error encountered during saving the data " + ex.getMessage());
             Toast.makeText(this, "Some error occurred while persisting the settings, Please contact App developers. ", Toast.LENGTH_SHORT).show();

@@ -66,4 +66,24 @@ public class TimePickerUtil {
         }
         return s_hour + ":" + s_minute + " " + am_pm;
     }
+
+    /**
+     * Takes a Time String in HourIn12:Minutes AM/PM (Ex 04:12 AM) representation and
+     * returns a calender object of that representation
+     * @param time Time in 12 Hours string format
+     * @return Calendar
+     */
+    public static Calendar getTimeInCalender(String time) {
+        Calendar calendar = Calendar.getInstance();
+        String [] timeSplit = time.split(":");
+        calendar.set(Calendar.HOUR, Integer.parseInt(timeSplit[0]));
+        timeSplit = timeSplit[1].split(" ");
+        calendar.set(Calendar.MINUTE, Integer.parseInt(timeSplit[0]));
+        if (timeSplit[1].equalsIgnoreCase("AM")) {
+            calendar.set(Calendar.AM_PM, Calendar.AM);
+        } else {
+            calendar.set(Calendar.AM_PM, Calendar.PM);
+        }
+        return calendar;
+    }
 }
