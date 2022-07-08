@@ -1,6 +1,7 @@
 package com.bkprojects.soundsleep;
 
 import android.app.AlarmManager;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -40,11 +41,26 @@ public class AlarmUtil {
         Calendar calendarToSet = TimePickerUtil.getTimeInCalender(time);
 
         //Preparing Intent
-        Intent setAlarm = new Intent(context, AlarmBroadcastReciever.class);
+        Intent setAlarm = new Intent(context, AlarmBroadcastReceiver.class);
         if (isStart) {
             setAlarm.setAction(START);
         } else {
             setAlarm.setAction(END);
+        }
+        if (mode.equalsIgnoreCase(context.getString(R.string.silent_mode))) {
+            NotificationManager notificationManager =
+                    (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+                    && !notificationManager.isNotificationPolicyAccessGranted()) {
+
+                Intent notificationIntent = new Intent(
+                        android.provider.Settings
+                                .ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS);
+
+                context.startActivity(notificationIntent);
+            }
+
         }
         setAlarm.putExtra(MODE_SETTING, mode);
         setAlarm.putExtra(NOTIFICATION_SETTING, notification);

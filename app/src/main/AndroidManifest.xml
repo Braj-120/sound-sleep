@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.bkprojects.soundsleep">
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
-
+    <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -23,7 +23,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <receiver android:name=".AlarmBroadcastReciever"/>
+        <receiver android:name=".AlarmBroadcastReceiver"/>
     </application>
 
 </manifest>
