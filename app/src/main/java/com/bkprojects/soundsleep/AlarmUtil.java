@@ -77,6 +77,7 @@ public class AlarmUtil {
 
     public void alarmScheduleWrapper(Entities entities) {
         schedule(entities.getStartTime(), startTimeRequestCode, true, entities.getMode(), entities.isNotifications());
+        schedule(entities.getStartTime(), startTimeRequestCode, false, entities.getMode(), entities.isNotifications());
     }
 }
 

@@ -1,7 +1,10 @@
 package com.bkprojects.soundsleep;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
@@ -48,8 +51,26 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             Toast.makeText(this, "Some error occurred while loading persistence layer, Please contact App developers. ", Toast.LENGTH_SHORT).show();
         }
 
+        //Notification channel creation.
+        createNotificationChannel();
+
         //Loading all stored data at the end of loading all object and UI items.
         loadSharedPrefs(this);
+
+    }
+
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        CharSequence name = getString(R.string.channel_name);
+        String description = getString(R.string.channel_description);
+        int importance = NotificationManager.IMPORTANCE_DEFAULT;
+        NotificationChannel channel = new NotificationChannel(getString(R.string.channel_id), name, importance);
+        channel.setDescription(description);
+        // Register the channel with the system; you can't change the importance
+        // or other notification behaviors after this
+        NotificationManager notificationManager = getSystemService(NotificationManager.class);
+        notificationManager.createNotificationChannel(channel);
 
     }
 
