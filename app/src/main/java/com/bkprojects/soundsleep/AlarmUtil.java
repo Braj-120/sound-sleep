@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.provider.Settings;
 
+import android.util.Log;
 import android.widget.Toast;
 
 import java.util.Calendar;
@@ -22,9 +23,10 @@ public class AlarmUtil {
     private static final String END = "com.bkprojects.soundsleep.END_ACTION";
     private static final String NOTIFICATION_SETTING = "com.bkprojects.soundsleep.NOTIFICATION_SETTING";
     private static final String MODE_SETTING = "com.bkprojects.soundsleep.MODE_SETTING";
-
-    private ComponentName receiver;
-    private PackageManager pm;
+    private static final String LOG_TAG =
+            MainActivity.class.getSimpleName();
+    private final ComponentName receiver;
+    private final PackageManager pm;
     public AlarmUtil(Context context) {
         this.context = context;
         receiver = new ComponentName(context, AlarmBroadcastReceiver.class);
@@ -81,6 +83,7 @@ public class AlarmUtil {
         } else {
             alarmPendingIntent = PendingIntent.getBroadcast(context.getApplicationContext(), requestCode, alarmIntent, PendingIntent.FLAG_CANCEL_CURRENT);
         }
+        Log.d(LOG_TAG, String.format("Setting the alarm at %s", calendarToSet.getTime()));
         //Setting Exact Alarm everytime. We need to use this as we want exact timing. Hence we have to set exact alarm every 24 hours
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendarToSet.getTimeInMillis(), alarmPendingIntent);
     }
@@ -89,9 +92,12 @@ public class AlarmUtil {
      * Wrapper for scheduling the alarm with all the attributes present in the Entities
      * @param entities The Entities Object
      */
-    public void alarmScheduleWrapper(Entities entities) {
-        schedule(entities.getStartTime(), startTimeRequestCode, true, entities.getMode(), entities.isNotifications());
-        schedule(entities.getStartTime(), startTimeRequestCode, false, entities.getMode(), entities.isNotifications());
+    public void alarmScheduleWrapper(Entities entities, boolean isStart) {
+        if (isStart) {
+            schedule(entities.getStartTime(), startTimeRequestCode, true, entities.getMode(), entities.isNotifications());
+        } else {
+            schedule(entities.getEndTime(), endTimeRequestCode, false, entities.getMode(), entities.isNotifications());
+        }
     }
 
     /**

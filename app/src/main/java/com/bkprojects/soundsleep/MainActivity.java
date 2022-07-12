@@ -1,7 +1,6 @@
 package com.bkprojects.soundsleep;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.NotificationCompat;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -199,6 +198,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
             //Start the timer
             GenerateAlarm.setAlarm(this);
+
+            Toast.makeText(this, "Alarm set successfully", Toast.LENGTH_SHORT).show();
         } catch (Exception ex) {
             Log.e(LOG_TAG, "Error encountered during saving the data " + ex.getMessage());
             Toast.makeText(this, "Some error occurred while persisting the settings, Please contact App developers. ", Toast.LENGTH_SHORT).show();

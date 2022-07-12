@@ -16,4 +16,11 @@
     <string name="channel_description">Sound Sleep Description</string>
     <string name="channel_id">primary_notification_channel_A</string>
     <string name="notification_title">Sound Sleep</string>
+    <string name="notification_text_vibrate">Changed the profile to vibrate mode</string>
+    <string name="notification_text_silent">Changed the profile to silent mode</string>
+    <string name="notification_text_normal">Changed the profile to normal mode</string>
+    <string name="notification_big_text_silent">Changed the Ring profile of the device to silent mode</string>
+    <string name="notification_big_text_vibrate">Changed the Ring profile of the device to vibrate mode</string>
+    <string name="notification_big_text_normal">Changed the Ring profile of the device to normal mode</string>
+
 </resources>

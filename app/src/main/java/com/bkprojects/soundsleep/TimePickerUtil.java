@@ -84,7 +84,7 @@ public class TimePickerUtil {
         } else {
             calendar.set(Calendar.AM_PM, Calendar.PM);
         }
-        //If the time has passed, clearly it is being set for next day
+        //If the time has passed for the end time, clearly it is being set for next day
         if (calendar.before(Calendar.getInstance())) {
             calendar.add(Calendar.DAY_OF_YEAR, 1);
         }
