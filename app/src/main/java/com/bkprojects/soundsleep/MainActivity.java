@@ -33,7 +33,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private Spinner modeSpinner;
     private Entities entities;
     private EntitiesDAO entitiesDAO;
-    private AlarmUtil alarmUtil;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +42,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         endTimeValue = findViewById(R.id.select_end_time_btn);
         notificationSwitch = findViewById(R.id.notification_switch);
         modeSpinner = createSpinner();
-        alarmUtil = new AlarmUtil(this);
         try {
             entitiesDAO = new EntitiesDAO(this);
         } catch (GeneralSecurityException | IOException e) {
@@ -59,16 +57,17 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     }
 
+    /**
+     * Create the notification channel
+     */
     private void createNotificationChannel() {
-        // Create the NotificationChannel, but only on API 26+ because
-        // the NotificationChannel class is new and not in the support library
+        // Create the NotificationChannel
         CharSequence name = getString(R.string.channel_name);
         String description = getString(R.string.channel_description);
         int importance = NotificationManager.IMPORTANCE_DEFAULT;
         NotificationChannel channel = new NotificationChannel(getString(R.string.channel_id), name, importance);
         channel.setDescription(description);
-        // Register the channel with the system; you can't change the importance
-        // or other notification behaviors after this
+        // Register the channel with the system
         NotificationManager notificationManager = getSystemService(NotificationManager.class);
         notificationManager.createNotificationChannel(channel);
 
@@ -160,12 +159,19 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         modeSpinner.setSelection(position);
     }
 
+    /**
+     * Save method to save the UI values into data store and schedule alarm according to the inputs.
+     * @param view The View
+     */
     public void save(View view) {
         try {
             String startTime, endTime, mode;
             boolean notifications;
+
+            //Get the UI values set by user
             startTime = startTimeValue.getText().toString();
             endTime = endTimeValue.getText().toString();
+            //Validate input on the UI
             if (this.getString(R.string.start_time_default).equals(startTime)) {
                 Toast.makeText(this, "Please select a start time", Toast.LENGTH_SHORT).show();
                 return;
@@ -177,7 +183,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             notifications = notificationSwitch.isChecked();
             Spinner modeSpinner = findViewById(R.id.mode_select_spinner);
             mode = modeSpinner.getSelectedItem().toString();
-            //TODO change this log statement
+
             Log.d(LOG_TAG, "Setting startTime: " +
                     startTime + " endTime: " + endTime + " notification: " + notifications
                     + " mode: " + mode);
@@ -192,9 +198,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             entitiesDAO.savePreferences(entities);
 
             //Start the timer
-
-//            Toast.makeText(this, "Saved and set timer successfully.", Toast.LENGTH_SHORT).show();
-            alarmUtil.alarmScheduleWrapper(entities);
+            GenerateAlarm.setAlarm(this);
         } catch (Exception ex) {
             Log.e(LOG_TAG, "Error encountered during saving the data " + ex.getMessage());
             Toast.makeText(this, "Some error occurred while persisting the settings, Please contact App developers. ", Toast.LENGTH_SHORT).show();

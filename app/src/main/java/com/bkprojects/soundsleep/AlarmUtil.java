@@ -3,8 +3,10 @@ package com.bkprojects.soundsleep;
 import android.app.AlarmManager;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.provider.Settings;
 
@@ -21,8 +23,12 @@ public class AlarmUtil {
     private static final String NOTIFICATION_SETTING = "com.bkprojects.soundsleep.NOTIFICATION_SETTING";
     private static final String MODE_SETTING = "com.bkprojects.soundsleep.MODE_SETTING";
 
+    private ComponentName receiver;
+    private PackageManager pm;
     public AlarmUtil(Context context) {
         this.context = context;
+        receiver = new ComponentName(context, AlarmBroadcastReceiver.class);
+        pm = context.getPackageManager();
     }
 
     public void schedule(String time, int requestCode, boolean isStart, String mode, boolean notification) {
@@ -37,20 +43,22 @@ public class AlarmUtil {
             }
         }
 
-        //Permission is present. Try scheduling a one of alarm.
+        /*Permission is present. Try scheduling a one of alarm.*/
+
         Calendar calendarToSet = TimePickerUtil.getTimeInCalender(time);
 
-        //Preparing Intent
-        Intent setAlarm = new Intent(context, AlarmBroadcastReceiver.class);
+        //Preparing Intent for the alarm
+        Intent alarmIntent = new Intent(context, AlarmBroadcastReceiver.class);
         if (isStart) {
-            setAlarm.setAction(START);
+            alarmIntent.setAction(START);
         } else {
-            setAlarm.setAction(END);
+            alarmIntent.setAction(END);
         }
+        //If the ringer mode has to be set to silent, we need to check if we have permission to set device in do not disturb mode
         if (mode.equalsIgnoreCase(context.getString(R.string.silent_mode))) {
             NotificationManager notificationManager =
                     (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-
+            //This is only for devices higher than M
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
                     && !notificationManager.isNotificationPolicyAccessGranted()) {
 
@@ -60,24 +68,45 @@ public class AlarmUtil {
 
                 context.startActivity(notificationIntent);
             }
-
         }
-        setAlarm.putExtra(MODE_SETTING, mode);
-        setAlarm.putExtra(NOTIFICATION_SETTING, notification);
+        //Now set the mode and notification setting
+        alarmIntent.putExtra(MODE_SETTING, mode);
+        alarmIntent.putExtra(NOTIFICATION_SETTING, notification);
 
+        //Register a pending intent, with the intent created above and target as the AlarmBroadcastReceiver
         PendingIntent alarmPendingIntent;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
              alarmPendingIntent = PendingIntent.getBroadcast(context.getApplicationContext(), requestCode,
-                    setAlarm, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+                    alarmIntent, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         } else {
-            alarmPendingIntent = PendingIntent.getBroadcast(context.getApplicationContext(), requestCode, setAlarm, PendingIntent.FLAG_CANCEL_CURRENT);
+            alarmPendingIntent = PendingIntent.getBroadcast(context.getApplicationContext(), requestCode, alarmIntent, PendingIntent.FLAG_CANCEL_CURRENT);
         }
+        //Setting Exact Alarm everytime. We need to use this as we want exact timing. Hence we have to set exact alarm every 24 hours
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendarToSet.getTimeInMillis(), alarmPendingIntent);
     }
 
+    /**
+     * Wrapper for scheduling the alarm with all the attributes present in the Entities
+     * @param entities The Entities Object
+     */
     public void alarmScheduleWrapper(Entities entities) {
         schedule(entities.getStartTime(), startTimeRequestCode, true, entities.getMode(), entities.isNotifications());
         schedule(entities.getStartTime(), startTimeRequestCode, false, entities.getMode(), entities.isNotifications());
+    }
+
+    /**
+     * Method to enable the alarm receiver in the manifest
+     */
+    public void enableAlarmReceiver() {
+        pm.setComponentEnabledSetting(receiver,
+                PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+                PackageManager.DONT_KILL_APP);
+    }
+
+    public void disableAlarmReceiver() {
+        pm.setComponentEnabledSetting(receiver,
+                PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+                PackageManager.DONT_KILL_APP);
     }
 }
 

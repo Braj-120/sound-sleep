@@ -36,10 +36,6 @@ public class EntitiesDAO {
                 );
     }
 
-    public void setSharedPreferences(SharedPreferences sharedPreferences) {
-        this.sharedPreferences = sharedPreferences;
-    }
-
     /**
      * Used to save all KV pair as preferences from entities into shared preference
      * @param entities The Entities object
@@ -77,5 +73,6 @@ public class EntitiesDAO {
         editor.remove(END_TIME_KEY);
         editor.remove(MODE_KEY);
         editor.remove(NOTIFICATION_KEY);
+        editor.apply();
     }
 }

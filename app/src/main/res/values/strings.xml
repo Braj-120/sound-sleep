@@ -15,4 +15,5 @@
     <string name="channel_name">Sound Sleep</string>
     <string name="channel_description">Sound Sleep Description</string>
     <string name="channel_id">primary_notification_channel_A</string>
+    <string name="notification_title">Sound Sleep</string>
 </resources>
