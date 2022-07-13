@@ -10,17 +10,17 @@ import java.util.Calendar;
  * It has an interface to provide a callback
  */
 public class TimePickerUtil {
-    TimePickerDialog mTimePickerDialog;
+    private TimePickerDialog mTimePickerDialog;
 
     /**
      * Interface to be used as a callback to the calling function
      */
-    public interface onTimeSet {
-        void onTime(TimePicker view, String time);
+    public interface OnTimeSet {
+        void onTime(TimePicker view, Calendar time);
     }
-    onTimeSet mOnTimeSet;
+    OnTimeSet mOnTimeSet;
 
-    public void setTimeListener(onTimeSet onTimeset) {
+    public void setTimeListener(OnTimeSet onTimeset) {
         mOnTimeSet = onTimeset;
     }
 
@@ -29,65 +29,17 @@ public class TimePickerUtil {
         int hour = cldr.get(Calendar.HOUR_OF_DAY);
         int minutes = cldr.get(Calendar.MINUTE);
         // time picker dialog
+        // Using an interface and accepting a lambda as a callback
+        // The lambda function overrides onTime of the interface
+        // So when onTime is called, it calls the lambda and hence the callback
         mTimePickerDialog = new TimePickerDialog(ctx,
                 (timePicker, hr, min) -> {
-                    String time = getTimeIn12Hours(hr, min);
-                    mOnTimeSet.onTime(timePicker, time);
+                    mOnTimeSet.onTime(timePicker, cldr);
                 }, hour, minutes, false);
         mTimePickerDialog.show();
     }
     public void show() {
         mTimePickerDialog.show();
     }
-
-    /**
-     * Converts the out time of date picker to a readable time
-     * @param hour Hour
-     * @param minute Minute
-     * @return String
-     */
-    public static String getTimeIn12Hours(int hour, int minute) {
-        String am_pm = "AM";
-        String s_minute = Integer.toString(minute);
-        String s_hour = Integer.toString(hour);
-
-        if (hour == 0) {
-            s_hour = Integer.toString(12);
-        } else if (hour > 12) {
-            hour = hour - 12;
-            s_hour = Integer.toString(hour);
-            am_pm = "PM";
-        }
-        if (hour < 10 && hour != 0) {
-            s_hour = "0" + hour;
-        }
-        if (minute < 10) {
-            s_minute = "0" + minute;
-        }
-        return s_hour + ":" + s_minute + " " + am_pm;
-    }
-
-    /**
-     * Takes a Time String in HourIn12:Minutes AM/PM (Ex 04:12 AM) representation and
-     * returns a calender object of that representation
-     * @param time Time in 12 Hours string format
-     * @return Calendar
-     */
-    public static Calendar getTimeInCalender(String time) {
-        Calendar calendar = Calendar.getInstance();
-        String [] timeSplit = time.split(":");
-        calendar.set(Calendar.HOUR, Integer.parseInt(timeSplit[0]));
-        timeSplit = timeSplit[1].split(" ");
-        calendar.set(Calendar.MINUTE, Integer.parseInt(timeSplit[0]));
-        if (timeSplit[1].equalsIgnoreCase("AM")) {
-            calendar.set(Calendar.AM_PM, Calendar.AM);
-        } else {
-            calendar.set(Calendar.AM_PM, Calendar.PM);
-        }
-        //If the time has passed for the end time, clearly it is being set for next day
-        if (calendar.before(Calendar.getInstance())) {
-            calendar.add(Calendar.DAY_OF_YEAR, 1);
-        }
-        return calendar;
-    }
 }
+

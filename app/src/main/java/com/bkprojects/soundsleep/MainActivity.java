@@ -12,7 +12,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.switchmaterial.SwitchMaterial;
@@ -20,6 +19,7 @@ import com.google.android.material.switchmaterial.SwitchMaterial;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
@@ -88,10 +88,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     /**
      * Start the Time Selector Dialog
-     *
      * @param view View
      */
-    public void setTime(View view) {
+    public void openTimeDialogAndGetTime(View view) {
         Button textViewToSetTemp;
         if (view.getId() == R.id.select_start_time_btn) {
             textViewToSetTemp = startTimeValue;
@@ -101,9 +100,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             throw new IllegalStateException("Unexpected value: " + view.getId());
         }
 
-        final Button textViewToSet = textViewToSetTemp;
+        final Button buttonViewToSet = textViewToSetTemp;
         TimePickerUtil tmUtil = new TimePickerUtil(this);
-        tmUtil.setTimeListener((view1, time) -> processTimePickerResult(textViewToSet, time));
+        tmUtil.setTimeListener((tView, calTime) -> processTimePickerResult(buttonViewToSet, calTime));
         tmUtil.show();
 
     }
@@ -111,6 +110,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         // On selecting a spinner item
+        // Do nothing as of now
     }
 
     @Override
@@ -120,25 +120,23 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     /**
      * For processing the time picker result
-     *
-     * @param textViewToSet The text view in which time must be set
-     * @param time          Time
+     *  @param buttonViewToSet The button view in which time must be set
+     * @param timeCal Calender Object containing time
      */
-    protected void processTimePickerResult(TextView textViewToSet, String time) {
-        Log.d(LOG_TAG, "Selected start time as " + time);
-        textViewToSet.setText(time);
+    protected void processTimePickerResult(Button buttonViewToSet, Calendar timeCal) {
+        String time = TimeUtil.getTimeIn12Hours(timeCal);
+        buttonViewToSet.setText(time);
     }
 
     /**
      * Load all the data from shared pref KV store and assign them to UI elements
-     *
      * @param context this
      */
     private void loadSharedPrefs(Context context) {
         try {
             entities = entitiesDAO.getPreferences(context);
-            startTimeValue.setText(entities.getStartTime());
-            endTimeValue.setText(entities.getEndTime());
+            startTimeValue.setText(TimeUtil.getTimeIn12Hours(entities.getStartTime()));
+            endTimeValue.setText(TimeUtil.getTimeIn12Hours(entities.getEndTime()));
             notificationSwitch.setChecked(entities.isNotifications());
             setModeSpinnerToVal(modeSpinner, entities.getMode());
         } catch (Exception e) {
@@ -187,9 +185,14 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     startTime + " endTime: " + endTime + " notification: " + notifications
                     + " mode: " + mode);
 
+            //Translate the time entities properly. The start time has to start today, even if it has passed. Endtime is usually in future, so if it has passed, it is
+            //for the next day.
+            String modifiedstartTime = TimeUtil.getCalenderStringFromUI(startTime, false);
+            String modifiedendTime = TimeUtil.getCalenderStringFromUI(endTime, true);
+
             //Set the Entities object
-            entities.setStartTime(startTime);
-            entities.setEndTime(endTime);
+            entities.setStartTime(modifiedstartTime);
+            entities.setEndTime(modifiedendTime);
             entities.setNotifications(notifications);
             entities.setMode(mode);
 
@@ -197,7 +200,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             entitiesDAO.savePreferences(entities);
 
             //Start the timer
-            GenerateAlarm.setAlarm(this);
+            GenerateAlarm.setCurrentAlarm(this);
 
             Toast.makeText(this, "Alarm set successfully", Toast.LENGTH_SHORT).show();
         } catch (Exception ex) {
@@ -207,6 +210,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     }
 
+    /**
+     * Reset method for resetting UI, clearing storage and removing all alarms.
+     * @param view The view
+     */
     public void reset(View view) {
         try {
             entitiesDAO.removeAllPreferences();

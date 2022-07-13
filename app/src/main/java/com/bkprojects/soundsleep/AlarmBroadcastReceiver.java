@@ -28,7 +28,7 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
         Log.d(LOG_TAG, String.format("Received the broadcast for %s", action));
         //Special case to handle the device restart. If the device has just restarted, set the alarms once again.
         if (action.equals("android.intent.action.BOOT_COMPLETED")) {
-            GenerateAlarm.setAlarm(context);
+            GenerateAlarm.setCurrentAlarm(context);
             return;
         }
         //Get the extras
@@ -59,7 +59,7 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
         }
 
         //Now, set a new Alarm for the next day
-        GenerateAlarm.setAlarm(context, START);
+        GenerateAlarm.setFutureAlarm(context, action);
     }
 
     private void showNotification(Context context, int ringerMode) {

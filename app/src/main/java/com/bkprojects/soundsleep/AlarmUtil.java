@@ -47,7 +47,7 @@ public class AlarmUtil {
 
         /*Permission is present. Try scheduling a one of alarm.*/
 
-        Calendar calendarToSet = TimePickerUtil.getTimeInCalender(time);
+        Calendar calendarToSet = TimeUtil.getTimeInCalender(time);
 
         //Preparing Intent for the alarm
         Intent alarmIntent = new Intent(context, AlarmBroadcastReceiver.class);
