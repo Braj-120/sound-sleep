@@ -135,13 +135,13 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private void loadSharedPrefs(Context context) {
         try {
             entities = entitiesDAO.getPreferences(context);
-            startTimeValue.setText(TimeUtil.getTimeIn12Hours(entities.getStartTime()));
-            endTimeValue.setText(TimeUtil.getTimeIn12Hours(entities.getEndTime()));
+            startTimeValue.setText(TimeUtil.getTimeIn12Hours(entities.getStartTime(), getString(R.string.start_time_default)));
+            endTimeValue.setText(TimeUtil.getTimeIn12Hours(entities.getEndTime(), getString(R.string.end_time_default)));
             notificationSwitch.setChecked(entities.isNotifications());
             setModeSpinnerToVal(modeSpinner, entities.getMode());
         } catch (Exception e) {
             Log.e(LOG_TAG, "Some error occurred while loading the stored data or setting UI with values. "+ e.getMessage());
-            Toast.makeText(this, "Some error occurred while loading the UI Please contact App developers. ", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Some error occurred while loading the UI. Please contact App developers. ", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -187,8 +187,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
             //Translate the time entities properly. The start time has to start today, even if it has passed. Endtime is usually in future, so if it has passed, it is
             //for the next day.
-            String modifiedstartTime = TimeUtil.getCalenderStringFromUI(startTime, false);
-            String modifiedendTime = TimeUtil.getCalenderStringFromUI(endTime, true);
+            String modifiedstartTime = TimeUtil.getCalenderStringFromUIValue(startTime, false);
+            String modifiedendTime = TimeUtil.getCalenderStringFromUIValue(endTime, true);
 
             //Set the Entities object
             entities.setStartTime(modifiedstartTime);
@@ -200,11 +200,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             entitiesDAO.savePreferences(entities);
 
             //Start the timer
-            GenerateAlarm.setCurrentAlarm(this);
+            AlarmController.setCurrentAlarm(this);
 
-            Toast.makeText(this, "Alarm set successfully", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "AlarmBase set successfully", Toast.LENGTH_SHORT).show();
         } catch (Exception ex) {
-            Log.e(LOG_TAG, "Error encountered during saving the data " + ex.getMessage());
+            Log.e(LOG_TAG, String.format("Error encountered during saving the data: Error: %1$s, %2$s", ex.getMessage(), ex));
             Toast.makeText(this, "Some error occurred while persisting the settings, Please contact App developers. ", Toast.LENGTH_SHORT).show();
         }
 
@@ -216,7 +216,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
      */
     public void reset(View view) {
         try {
+            //Remove data from preferences. This is first, because error here, means don't remove UI values
             entitiesDAO.removeAllPreferences();
+            //Now set UI to default
             entities.setStartTime(this.getString(R.string.start_time_default));
             startTimeValue.setText(this.getString(R.string.start_time_default));
             entities.setEndTime(this.getString(R.string.end_time_default));
@@ -225,6 +227,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             entities.setNotifications(false);
             setModeSpinnerToVal(modeSpinner, this.getString(R.string.vibrate_mode));
             entities.setMode(this.getString(R.string.vibrate_mode));
+
+            //Now remove any pending alarms and reset the receiver
+            AlarmController.removeAlarm(this);
+
             Toast.makeText(this, "Reset Successfully", Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             Log.e(LOG_TAG, "Error encountered during resetting the data " + e.getMessage());

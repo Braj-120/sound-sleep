@@ -18,54 +18,71 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
     //Setting same notification id for all notifications since they should be same.
     private static final int notification_id = 0;
     private static final String LOG_TAG =
-            MainActivity.class.getSimpleName();
+            BroadcastReceiver.class.getSimpleName();
 
+    /**
+     * Overridden method, the default broadcast handler
+     * @param context Context
+     * @param intent The Intent raised
+     */
     @Override
     public void onReceive(Context context, Intent intent) {
-        //First get the action
-        String action = intent.getAction();
+        try {
+            //First get the action
+            String action = intent.getAction();
 
-        Log.d(LOG_TAG, String.format("Received the broadcast for %s", action));
-        //Special case to handle the device restart. If the device has just restarted, set the alarms once again.
-        if (action.equals("android.intent.action.BOOT_COMPLETED")) {
-            GenerateAlarm.setCurrentAlarm(context);
-            return;
-        }
-        //Get the extras
-        boolean notification = intent.getBooleanExtra(NOTIFICATION_SETTING, false);
-        String mode = intent.getStringExtra(MODE_SETTING);
-
-        //Set the AudioManager
-        AudioManager am = (AudioManager) context.getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
-
-        int ringerMode = -1;
-        //If the action is start of the alarm, we need to set the device ringer to desired mode.
-        if (action.equalsIgnoreCase(START)) {
-            if (context.getString(R.string.vibrate_mode).equalsIgnoreCase(mode)) {
-                am.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
-                ringerMode = AudioManager.RINGER_MODE_VIBRATE;
-            } else if (context.getString(R.string.silent_mode).equalsIgnoreCase(mode)) {
-                am.setRingerMode(AudioManager.RINGER_MODE_SILENT);
-                ringerMode = AudioManager.RINGER_MODE_SILENT;
+            Log.d(LOG_TAG, String.format("Received the broadcast for %s", action));
+            //Special case to handle the device restart. If the device has just restarted, set the alarms once again.
+            if (action.equals("android.intent.action.BOOT_COMPLETED")) {
+                AlarmController.setCurrentAlarm(context);
+                return;
             }
-        } else if(action.equalsIgnoreCase(END)) {
-            //Else, we need to set the device ringer to Normal mode.
-            am.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
-            ringerMode = AudioManager.RINGER_MODE_NORMAL;
-        }
-        //If notification is set to true, show notification.
-        if (notification) {
-            showNotification(context, ringerMode);
+            //Get the extras
+            boolean notification = intent.getBooleanExtra(NOTIFICATION_SETTING, false);
+            String mode = intent.getStringExtra(MODE_SETTING);
+
+            //Set the AudioManager
+            AudioManager audioManager = (AudioManager) context.getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
+
+            int ringerMode = -1;
+            //If the action is start of the alarm, we need to set the device ringer to desired mode.
+            if (action.equalsIgnoreCase(START)) {
+                if (context.getString(R.string.vibrate_mode).equalsIgnoreCase(mode)) {
+                    audioManager.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
+                    ringerMode = AudioManager.RINGER_MODE_VIBRATE;
+                } else if (context.getString(R.string.silent_mode).equalsIgnoreCase(mode)) {
+                    audioManager.setRingerMode(AudioManager.RINGER_MODE_SILENT);
+                    ringerMode = AudioManager.RINGER_MODE_SILENT;
+                }
+            } else if(action.equalsIgnoreCase(END)) {
+                //Else, we need to set the device ringer to Normal mode.
+                audioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+                ringerMode = AudioManager.RINGER_MODE_NORMAL;
+            }
+            //If notification is set to true, show notification.
+            if (notification) {
+                showNotification(context, ringerMode);
+            }
+
+            //Now, set a new AlarmBase for the next day
+            AlarmController.setFutureAlarm(context, action);
+        }catch (Exception e) {
+            Log.e(LOG_TAG, String.format("Error occurred in AlarmBroadcastReceiver, %s", e.getMessage()));
         }
 
-        //Now, set a new Alarm for the next day
-        GenerateAlarm.setFutureAlarm(context, action);
     }
 
+    /**
+     * Method to show notification, if notification flag is on
+     * @param context Context
+     * @param ringerMode Ringer Mode i.e. vibrate, normal or silent
+     */
     private void showNotification(Context context, int ringerMode) {
         int icon;
         String notificationTitle, notificationText, notificationBigText;
         notificationTitle = context.getString(R.string.notification_title);
+
+        //Show notification depending on the Ringer Mode. Ringer Mode is set above according to desired Ringer setting
         if(ringerMode == AudioManager.RINGER_MODE_VIBRATE) {
             icon = R.drawable.ic_vibrate_notification;
             notificationText = context.getString(R.string.notification_text_vibrate);
@@ -79,6 +96,7 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
             notificationText = context.getString(R.string.notification_text_normal);
             notificationBigText = context.getString(R.string.notification_big_text_normal);
         }
+        //Build and show notification.
         NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, context.getString(R.string.channel_id))
                 .setSmallIcon(icon)

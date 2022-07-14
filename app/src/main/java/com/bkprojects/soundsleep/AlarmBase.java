@@ -15,7 +15,7 @@ import android.widget.Toast;
 
 import java.util.Calendar;
 
-public class AlarmUtil {
+public class AlarmBase {
     private final Context context;
     private static final int startTimeRequestCode = 20221;
     private static final int endTimeRequestCode = 20222;
@@ -23,17 +23,24 @@ public class AlarmUtil {
     private static final String END = "com.bkprojects.soundsleep.END_ACTION";
     private static final String NOTIFICATION_SETTING = "com.bkprojects.soundsleep.NOTIFICATION_SETTING";
     private static final String MODE_SETTING = "com.bkprojects.soundsleep.MODE_SETTING";
-    private static final String LOG_TAG =
-            MainActivity.class.getSimpleName();
+    private static final String LOG_TAG = AlarmBase.class.getSimpleName();
     private final ComponentName receiver;
     private final PackageManager pm;
-    public AlarmUtil(Context context) {
+    public AlarmBase(Context context) {
         this.context = context;
         receiver = new ComponentName(context, AlarmBroadcastReceiver.class);
         pm = context.getPackageManager();
     }
 
-    public void schedule(String time, int requestCode, boolean isStart, String mode, boolean notification) {
+    /**
+     * This method contains the complete logic of scheduling the alarm. Its private and is called using the wrapper
+     * @param time Time at which alarm to schedule
+     * @param requestCode The Request code
+     * @param isStart is it start alarm
+     * @param mode Vibrate or Silent
+     * @param notification Notification True or False
+     */
+    private void schedule(String time, int requestCode, boolean isStart, String mode, boolean notification) {
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         //Check if the app has permission to set alarm.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -109,10 +116,48 @@ public class AlarmUtil {
                 PackageManager.DONT_KILL_APP);
     }
 
+    /**
+     * Method to disable alarm receiver in the manifest
+     */
     public void disableAlarmReceiver() {
         pm.setComponentEnabledSetting(receiver,
                 PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
                 PackageManager.DONT_KILL_APP);
+    }
+
+    /**
+     * Cancels the alarm for start or end time
+     * @param isStart whether alarm to cancel is start or end one
+     */
+    public void removeAlarm(boolean isStart) {
+        //Get Alarm Manager
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        int requestCode;
+        //Create exact same intent
+        Intent alarmIntent = new Intent(context, AlarmBroadcastReceiver.class);
+        if (isStart) {
+            requestCode = startTimeRequestCode;
+            alarmIntent.setAction(START);
+        } else {
+            requestCode = endTimeRequestCode;
+            alarmIntent.setAction(END);
+        }
+        //Put blank extras
+        alarmIntent.putExtra(MODE_SETTING, "");
+        alarmIntent.putExtra(NOTIFICATION_SETTING, "");
+
+        //Register a pending intent, with the intent created above and target as the AlarmBroadcastReceiver for cancelling the existing intent
+        PendingIntent alarmPendingIntent;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            alarmPendingIntent = PendingIntent.getBroadcast(context.getApplicationContext(), requestCode,
+                    alarmIntent, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        } else {
+            alarmPendingIntent = PendingIntent.getBroadcast(context.getApplicationContext(), requestCode, alarmIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+        }
+        //Now cancel the intent
+        if(alarmPendingIntent != null) {
+            alarmManager.cancel(alarmPendingIntent);
+        }
     }
 }
 
