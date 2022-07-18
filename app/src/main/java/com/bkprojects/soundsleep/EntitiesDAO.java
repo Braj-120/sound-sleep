@@ -2,6 +2,8 @@ package com.bkprojects.soundsleep;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
+import android.widget.Toast;
 
 import androidx.security.crypto.EncryptedSharedPreferences;
 import androidx.security.crypto.MasterKey;
@@ -21,6 +23,8 @@ public class EntitiesDAO {
     private final String NOTIFICATION_KEY = "notification";
     private final String MODE_KEY = "mode";
     private SharedPreferences sharedPreferences;
+    private static final String LOG_TAG = EntitiesDAO.class.getSimpleName();
+
 
     public EntitiesDAO(Context context) throws GeneralSecurityException, IOException {
         MasterKey mkey = new MasterKey.Builder(context, MasterKey.DEFAULT_MASTER_KEY_ALIAS)
@@ -40,14 +44,19 @@ public class EntitiesDAO {
      * Used to save all KV pair as preferences from entities into shared preference
      * @param entities The Entities object
      */
-    public void savePreferences(Entities entities) {
+    public void savePreferences(Entities entities) throws EntitiesDAOException {
+        try{
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString(START_TIME_KEY, entities.getStartTime());
+            editor.putString(END_TIME_KEY, entities.getEndTime());
+            editor.putString(MODE_KEY, entities.getMode());
+            editor.putBoolean(NOTIFICATION_KEY, entities.isNotifications());
+            editor.apply();
+        } catch (Exception e) {
+            Log.e(LOG_TAG, String.format("Error encountered during saving the data: Error: %1$s, %2$s", e.getMessage(), e));
+            throw new EntitiesDAOException(String.format("Error encountered during saving the data: Error: %1$s, %2$s", e.getMessage(), e));
+        }
 
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(START_TIME_KEY, entities.getStartTime());
-        editor.putString(END_TIME_KEY, entities.getEndTime());
-        editor.putString(MODE_KEY, entities.getMode());
-        editor.putBoolean(NOTIFICATION_KEY, entities.isNotifications());
-        editor.apply();
     }
 
     /**

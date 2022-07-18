@@ -48,30 +48,22 @@ public class TimeUtil {
         if (datetimeString.equalsIgnoreCase(defaultTime)) {
             return defaultTime;
         }
-        Calendar calendar = Calendar.getInstance();
-        DateFormat dateFormat = SimpleDateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, Locale.getDefault());
-        calendar.setTime(dateFormat.parse(datetimeString));
+        Calendar calendar = getCalendarFromDTString(datetimeString);
         return getTimeIn12Hours(calendar);
     }
 
     /**
-     * Takes a Time String in Hour:Minutes AM/PM (Ex 04:12 AM) representation and
+     * Takes a Time String in date time format representation and
      * returns a calender object of that representation
-     *
-     * @param time Time in 12 Hours string format
+     * @param datetime Time in 12 Hours string format
      * @return Calendar
+     * @throws ParseException Exception
      */
-    public static Calendar getTimeInCalender(String time) {
+    public static Calendar getCalendarFromDTString(String datetime) throws ParseException{
         Calendar calendar = Calendar.getInstance();
-        String[] timeSplit = time.split(":");
-        calendar.set(Calendar.HOUR, Integer.parseInt(timeSplit[0]));
-        timeSplit = timeSplit[1].split(" ");
-        calendar.set(Calendar.MINUTE, Integer.parseInt(timeSplit[0]));
-        if (timeSplit[1].equalsIgnoreCase("AM")) {
-            calendar.set(Calendar.AM_PM, Calendar.AM);
-        } else {
-            calendar.set(Calendar.AM_PM, Calendar.PM);
-        }
+        DateFormat dateFormat = SimpleDateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, Locale.getDefault());
+        calendar.setTime(dateFormat.parse(datetime));
+
         return calendar;
     }
 
@@ -84,7 +76,16 @@ public class TimeUtil {
      */
     public static String getCalenderStringFromUIValue(String time, boolean isStartTime) {
         //Convert this time into calendar object
-        Calendar calObj = getTimeInCalender(time);
+        Calendar calObj = Calendar.getInstance();
+        String[] timeSplit = time.split(":");
+        calObj.set(Calendar.HOUR, Integer.parseInt(timeSplit[0]));
+        timeSplit = timeSplit[1].split(" ");
+        calObj.set(Calendar.MINUTE, Integer.parseInt(timeSplit[0]));
+        if (timeSplit[1].equalsIgnoreCase("AM")) {
+            calObj.set(Calendar.AM_PM, Calendar.AM);
+        } else {
+            calObj.set(Calendar.AM_PM, Calendar.PM);
+        }
         if (!isStartTime && calObj.before(Calendar.getInstance())) {
             calObj.add(Calendar.DAY_OF_YEAR, 1);
         }
@@ -97,16 +98,16 @@ public class TimeUtil {
      *
      * @param datetime the timestamp stored in String.
      * @return returns the same time but after adding 1 day
+     * @throws ParseException Exception
      */
     public static String getNextAlarmTime(String datetime) throws ParseException {
 
-        Calendar calendar = Calendar.getInstance();
-        DateFormat dateFormat = SimpleDateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, Locale.getDefault());
-        calendar.setTime(dateFormat.parse(datetime));
+        Calendar calendar = getCalendarFromDTString(datetime);
         //Add 1 day to current time it is being set for next day
         if (calendar.before(Calendar.getInstance())) {
             calendar.add(Calendar.DAY_OF_YEAR, 1);
         }
+        DateFormat dateFormat = SimpleDateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, Locale.getDefault());
         return dateFormat.format(calendar.getTime());
     }
 }

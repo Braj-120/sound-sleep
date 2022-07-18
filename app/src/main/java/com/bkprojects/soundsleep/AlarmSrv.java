@@ -13,9 +13,10 @@ import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
 
+import java.text.ParseException;
 import java.util.Calendar;
 
-public class AlarmBase {
+public class AlarmSrv {
     private final Context context;
     private static final int startTimeRequestCode = 20221;
     private static final int endTimeRequestCode = 20222;
@@ -23,10 +24,10 @@ public class AlarmBase {
     private static final String END = "com.bkprojects.soundsleep.END_ACTION";
     private static final String NOTIFICATION_SETTING = "com.bkprojects.soundsleep.NOTIFICATION_SETTING";
     private static final String MODE_SETTING = "com.bkprojects.soundsleep.MODE_SETTING";
-    private static final String LOG_TAG = AlarmBase.class.getSimpleName();
+    private static final String LOG_TAG = AlarmSrv.class.getSimpleName();
     private final ComponentName receiver;
     private final PackageManager pm;
-    public AlarmBase(Context context) {
+    public AlarmSrv(Context context) {
         this.context = context;
         receiver = new ComponentName(context, AlarmBroadcastReceiver.class);
         pm = context.getPackageManager();
@@ -40,7 +41,7 @@ public class AlarmBase {
      * @param mode Vibrate or Silent
      * @param notification Notification True or False
      */
-    private void schedule(String time, int requestCode, boolean isStart, String mode, boolean notification) {
+    private void schedule(String time, int requestCode, boolean isStart, String mode, boolean notification) throws ParseException {
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         //Check if the app has permission to set alarm.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -54,7 +55,7 @@ public class AlarmBase {
 
         /*Permission is present. Try scheduling a one of alarm.*/
 
-        Calendar calendarToSet = TimeUtil.getTimeInCalender(time);
+        Calendar calendarToSet = TimeUtil.getCalendarFromDTString(time);
 
         //Preparing Intent for the alarm
         Intent alarmIntent = new Intent(context, AlarmBroadcastReceiver.class);
@@ -99,7 +100,7 @@ public class AlarmBase {
      * Wrapper for scheduling the alarm with all the attributes present in the Entities
      * @param entities The Entities Object
      */
-    public void alarmScheduleWrapper(Entities entities, boolean isStart) {
+    public void alarmScheduleWrapper(Entities entities, boolean isStart) throws ParseException {
         if (isStart) {
             schedule(entities.getStartTime(), startTimeRequestCode, true, entities.getMode(), entities.isNotifications());
         } else {

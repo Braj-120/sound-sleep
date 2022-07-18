@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             entitiesDAO = new EntitiesDAO(this);
         } catch (GeneralSecurityException | IOException e) {
             Log.e(LOG_TAG, "Error occurred while loading shared preference storage " + e.getMessage());
-            Toast.makeText(this, "Some error occurred while loading persistence layer, Please contact App developers. ", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Some error occurred while loading saved schedules, Please contact App developers. ", Toast.LENGTH_SHORT).show();
         }
 
         //Notification channel creation.
@@ -202,10 +202,15 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             //Start the timer
             AlarmController.setCurrentAlarm(this);
 
-            Toast.makeText(this, "AlarmBase set successfully", Toast.LENGTH_SHORT).show();
-        } catch (Exception ex) {
+            Toast.makeText(this, "Alarm set successfully", Toast.LENGTH_SHORT).show();
+        } catch (EntitiesDAOException ex) {
+            Toast.makeText(this, "Some error occurred while saving the settings, Please contact App developers. ", Toast.LENGTH_SHORT).show();
+        }catch (AlarmSetException ase) {
+            Toast.makeText(this, "Some error occurred while setting schedule, Please try again or contact App developers. ", Toast.LENGTH_SHORT).show();
+        }
+        catch (Exception ex) {
             Log.e(LOG_TAG, String.format("Error encountered during saving the data: Error: %1$s, %2$s", ex.getMessage(), ex));
-            Toast.makeText(this, "Some error occurred while persisting the settings, Please contact App developers. ", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Some error occurred while saving and scheduling, Please contact App developers. ", Toast.LENGTH_SHORT).show();
         }
 
     }

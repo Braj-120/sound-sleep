@@ -64,9 +64,10 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
                 showNotification(context, ringerMode);
             }
 
-            //Now, set a new AlarmBase for the next day
+            //Now, set a new AlarmSrv for the next day
             AlarmController.setFutureAlarm(context, action);
-        }catch (Exception e) {
+        }
+        catch (Exception e) {
             Log.e(LOG_TAG, String.format("Error occurred in AlarmBroadcastReceiver, %s", e.getMessage()));
         }
 

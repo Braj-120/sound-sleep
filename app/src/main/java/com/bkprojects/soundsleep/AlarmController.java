@@ -13,36 +13,47 @@ public class AlarmController {
     private static final String START = "com.bkprojects.soundsleep.START_ACTION";
 
     /**
-     * A static method as a utility to wrap the AlarmBase. This is needed to decouple the AlarmBase from rest of application
+     * A static method as a utility to wrap the AlarmSrv. This is needed to decouple the AlarmSrv from rest of application
      * It allows scheduling an alert by loading the entities from the shared preferences. This is to schedule the current alarms, i.e. for both start and end times.
      * @param context Context of application
+     * @throws AlarmSetException Exception
      */
-    public static void setCurrentAlarm(Context context) {
+    public static void setCurrentAlarm(Context context) throws AlarmSetException {
+        Entities entities = null;
         try {
             //Load saved entities
-            Entities entities = getEntities(context);
+            entities = getEntities(context);
             if (entities == null) {
+                //Returning here without error since this means Setting alarm was called before entities saved.
+                Log.w(LOG_TAG, "Setting alarm was called before entities saved. How?");
                 return;
             }
-            AlarmBase alarmBase = new AlarmBase(context);
-            //First enable the alarmBase receiver in the android manifest
-            alarmBase.enableAlarmReceiver();
-            //Now schedule the alarmBase
-            alarmBase.alarmScheduleWrapper(entities, true);
-            alarmBase.alarmScheduleWrapper(entities, false);
+            AlarmSrv alarmSrv = new AlarmSrv(context);
+            //First enable the alarmSrv receiver in the android manifest
+            alarmSrv.enableAlarmReceiver();
+            //Now schedule the alarmSrv
+            alarmSrv.alarmScheduleWrapper(entities, true);
+            alarmSrv.alarmScheduleWrapper(entities, false);
         } catch (GeneralSecurityException | IOException e) {
             Log.e(LOG_TAG, "Error occurred while loading shared preference storage " + e.getMessage());
-            Toast.makeText(context, "Some error occurred while loading persistence layer, Please contact App developers. ", Toast.LENGTH_SHORT).show();
+            throw new AlarmSetException("Failed to set alarm due to error");
+        } catch (ParseException e) {
+            Log.e(LOG_TAG, String.format("Error occurred while parsing the time stored in entities. start time: %1$s, end time: %2$s error message: %3$s ",
+                    entities.getStartTime(), entities.getEndTime(), e.getMessage()));
+            throw new AlarmSetException("Failed to set alarm due to error");
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Error occurred while setting alarm " + e.getMessage());
+            throw new AlarmSetException("Failed to set alarm due to error" + e.getMessage());
         }
     }
     /**
-     * A static method as a utility to wrap the AlarmBase. This is needed to decouple the AlarmBase from rest of application
+     * A static method as a utility to wrap the AlarmSrv. This is needed to decouple the AlarmSrv from rest of application
      * It allows scheduling for future. Selection needs to be made whether is a start alarm or end alarm.
      * Used for scheduling subsequent alarm setting calls
      * @param context Context of application
      * @param action The action i.e. START or END
      */
-    public static void setFutureAlarm(Context context, String action) {
+    public static void setFutureAlarm(Context context, String action)  {
         String time="";
         try {
             //Load saved entities
@@ -60,17 +71,20 @@ public class AlarmController {
             }
             //Persist the new Entities
             new EntitiesDAO(context).savePreferences(entities);
-            AlarmBase alarmBase = new AlarmBase(context);
-            //First enable the alarmBase receiver in the android manifest
-            alarmBase.enableAlarmReceiver();
-            //Now schedule the alarmBase
-            alarmBase.alarmScheduleWrapper(entities, isStart);
+            AlarmSrv alarmSrv = new AlarmSrv(context);
+            //First enable the alarmSrv receiver in the android manifest
+            alarmSrv.enableAlarmReceiver();
+            //Now schedule the alarmSrv
+            alarmSrv.alarmScheduleWrapper(entities, isStart);
         } catch (GeneralSecurityException | IOException e) {
             Log.e(LOG_TAG, "Error occurred while loading shared preference storage " + e.getMessage());
-            Toast.makeText(context, "Some error occurred while loading persistence layer, Please contact App developers. ", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "Some error occurred while loading saved schedule data, Please contact App developers. ", Toast.LENGTH_SHORT).show();
         } catch (ParseException e) {
             Log.e(LOG_TAG, String.format("Error occurred while parsing the datetime string %1$s with following message %2$s",time,e.getMessage() ));
-            Toast.makeText(context, "Some error occurred while loading persistence layer, Please contact App developers. ", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "Some error occurred while setting new schedule, Please contact App developers. ", Toast.LENGTH_SHORT).show();
+        } catch (EntitiesDAOException e) {
+            Log.e(LOG_TAG, "Error occurred while saving shared preference settings in storage for future" + e.getMessage());
+            Toast.makeText(context, "Some error occurred while setting next schedule, Please contact App developers. ", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -100,14 +114,14 @@ public class AlarmController {
      * @param context Context of application
      */
     public static void removeAlarm(Context context) {
-        AlarmBase alarmBase = new AlarmBase(context);
+        AlarmSrv alarmSrv = new AlarmSrv(context);
         //First disable Alarm Receiver
-        alarmBase.disableAlarmReceiver();
+        alarmSrv.disableAlarmReceiver();
 
         //Then remove all pending alarms
         //First for start
-        alarmBase.removeAlarm(true);
+        alarmSrv.removeAlarm(true);
         //now for end
-        alarmBase.removeAlarm(false);
+        alarmSrv.removeAlarm(false);
     }
 }
